@@ -1,0 +1,4 @@
+name: MKWhitelist
+version: 1.0
+main: dev.mkwhitelist.MKWhitelist
+api-version: "26.2"
