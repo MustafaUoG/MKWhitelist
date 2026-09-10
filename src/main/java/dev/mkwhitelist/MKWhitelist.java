@@ -1,5 +1,6 @@
 package dev.mkwhitelist;
 
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,6 +9,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import java.util.Map;
+import java.util.HashMap;
 
 public class MKWhitelist extends JavaPlugin {
 
@@ -17,7 +20,7 @@ public class MKWhitelist extends JavaPlugin {
     private JDA jda;
     private boolean discordConnected = false;
     private DatabaseManager databaseManager;
-
+    private final Map<String, PendingLink> pendingLinks = new HashMap<>();
 
     @Override
     public void onEnable(){
@@ -31,6 +34,7 @@ public class MKWhitelist extends JavaPlugin {
 
         this.databaseManager = new DatabaseManager(getDataFolder() + "/linked_accounts.db");
 
+
         try {
             this.jda = JDABuilder.createDefault(botToken)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
@@ -41,7 +45,12 @@ public class MKWhitelist extends JavaPlugin {
             Guild guild = jda.getGuildById(guildId);
             if (guild != null) {
                 guild.loadMembers().get();
+                guild.upsertCommand("link", "Link your Minecraft account using the code")
+                        .addOption(OptionType.STRING, "code", "The code shown when you tried to join the Minecraft server", true)
+                        .queue();
             }
+
+            jda.addEventListener(new LinkCommandListener(this));
 
             this.discordConnected = true;
             getLogger().info("Discord bot connected successfully.");
@@ -94,5 +103,43 @@ public class MKWhitelist extends JavaPlugin {
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
     }
+
+    public String generateLinkCode(String minecraftUuid){
+        String code =  generateRandomCode();
+        pendingLinks.put(code, new PendingLink(minecraftUuid, System.currentTimeMillis()));
+        return code;
+    }
+
+    private String generateRandomCode(){
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+
+        for (int i=0; i<6; i++){
+            int index = random.nextInt(characters.length());
+            code.append(characters.charAt(index));
+        }
+
+        return code.toString();
+    }
+
+    public String redeemLinkCode(String code) {
+        PendingLink pendingLink = pendingLinks.get(code);
+
+        if (pendingLink == null){
+            return null;
+        }
+        long ageInMillis = System.currentTimeMillis() - pendingLink.getCreatedAt();
+        long tenMinutesInMillis = 10*60*1000;
+
+        if (ageInMillis > tenMinutesInMillis){
+            pendingLinks.remove(code);
+            return null;
+        }
+
+        pendingLinks.remove(code);
+        return pendingLink.getMinecraftUuid();
+    }
+
 }
 
