@@ -30,7 +30,7 @@ public class PreLoginListener implements Listener {
 
         if (discordId == null){
             String code = plugin.generateLinkCode(playerUUID.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You need to link your Discord Account first!\n" + "Join our discord server and run /link" + code);
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You need to link your Discord Account first!\n" + "Join our discord server and run /link " + code);
             return;
         }
 
@@ -40,8 +40,7 @@ public class PreLoginListener implements Listener {
         }
 
 
-        plugin.getLogger().info("Pre-Login check for UUID: " + playerUUID);
-        plugin.getLogger().info("Server online-mode: " + plugin.isOnlineMode());
-        plugin.getLogger().info("Player " + playerUUID + "has passed the whitelist check.");
+
+        plugin.getLogger().info("Player " + playerUUID + " has passed the whitelist check.");
     }
 }
