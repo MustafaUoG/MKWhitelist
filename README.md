@@ -91,6 +91,7 @@ Codes expire after 10 minutes and can only be used once.
 ## Companion App
 
 **[MKWhitelistManager](https://github.com/MustafaUoG/MKWhitelist-Manager)** is a desktop app for viewing and managing linked accounts — search, view, and unlink players without touching the database directly.
+**[Download MKWhitelistManager](https://github.com/MustafaUoG/MKWhitelist-Manager/releases/latest)** — no Java installation required.
 
 ## Troubleshooting
 
