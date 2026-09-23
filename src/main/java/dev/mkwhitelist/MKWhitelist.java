@@ -134,6 +134,8 @@ public class MKWhitelist extends JavaPlugin {
     }
 
     public String generateLinkCode(String minecraftUuid){
+        pendingLinks.entrySet().removeIf(entry -> entry.getValue().getMinecraftUuid().equals(minecraftUuid));
+
         String code =  generateRandomCode();
         pendingLinks.put(code, new PendingLink(minecraftUuid, System.currentTimeMillis()));
         return code;
