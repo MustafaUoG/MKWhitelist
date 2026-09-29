@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import java.util.Map;
 import java.util.HashMap;
+import org.bukkit.entity.Player;
 
 public class MKWhitelist extends JavaPlugin {
 
@@ -43,6 +44,12 @@ public class MKWhitelist extends JavaPlugin {
         connectToDiscord();
 
         getServer().getPluginManager().registerEvents(new PreLoginListener(this), this);
+
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            for (Player player : getServer().getOnlinePlayers()) {
+                checkPlayer(player);
+            }
+        }, 20L * 90, 20L * 90);
 
     }
 
@@ -129,6 +136,26 @@ public class MKWhitelist extends JavaPlugin {
         Member member = guild.getMemberById(discordUserId);
         return member != null;
     }
+
+    private void checkPlayer(Player player) {
+        if (!discordConnected) {
+            player.kickPlayer("Server setup incomplete. Please contact an admin.");
+            return;
+        }
+
+        String discordId = databaseManager.getLinkedDiscordId(player.getUniqueId().toString());
+
+        if (discordId == null) {
+            player.kickPlayer("Your account is no longer linked. Please link again to continue playing.");
+            return;
+        }
+
+        if (!isMemberofGuild(discordId)) {
+            player.kickPlayer("You are no longer a member of our Discord server.");
+        }
+    }
+
+
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
     }
