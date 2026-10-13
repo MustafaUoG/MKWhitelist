@@ -14,6 +14,7 @@ A Minecraft plugin that requires players to link their Discord account before jo
 - [Discord Bot Setup](#discord-bot-setup)
 - [Configuration](#configuration)
 - [Linking Your Account (Players)](#linking-your-account-players)
+- [Admin Commands](#admin-commands)
 - [Companion App](#companion-app)
 - [Troubleshooting](#troubleshooting)
 - [Known Limitations & Roadmap](#known-limitations--roadmap)
@@ -78,7 +79,7 @@ discord:
 - **bot-token** — from the Bot tab in the Developer Portal (see above)
 - **guild-id** — right-click your Discord server's icon (with [Developer Mode](https://support.discord.com/hc/en-us/articles/206346498) enabled) and choose **Copy Server ID**
 
-Restart the server after editing.
+Restart the server after editing, or run `/mkwhitelist reload` in-game or from the console.
 
 ## Linking Your Account (Players)
 
@@ -87,6 +88,21 @@ Restart the server after editing.
 3. You're now linked — join the server again
 
 Codes expire after 10 minutes and can only be used once.
+
+To unlink, run `/unlink` in the Discord server. If you're online, you'll be kicked and will need to link again to rejoin.
+
+## Admin Commands
+
+`/mkwhitelist` works in-game and from the console. Ops have it by default, and you can grant it to others with the `mkwhitelist.admin` permission.
+
+| Command | What it does |
+|---|---|
+| `/mkwhitelist status` | Shows whether the Discord bot is connected, how many accounts are linked, and how many link codes are pending |
+| `/mkwhitelist lookup <player>` | Shows which Discord account a player is linked to |
+| `/mkwhitelist unlink <player>` | Unlinks a player and kicks them if they're online |
+| `/mkwhitelist reload` | Re-reads `config.yml` and reconnects the bot if the Discord settings changed |
+
+`lookup` and `unlink` only work for players who have tried joining the server at least once.
 
 ## Companion App
 
@@ -105,9 +121,8 @@ Codes expire after 10 minutes and can only be used once.
 
 ## Known Limitations & Roadmap
 
-- Unlinking a player (via the companion app) doesn't kick them if they're already connected — it only takes effect on their next join attempt
+- Unlinking a player via the companion app doesn't kick them right away. Online players are re-checked every 90 seconds, so it takes effect then. (`/mkwhitelist unlink` and Discord `/unlink` take effect immediately.)
 - Config is edited manually via YAML; a setup wizard in the companion app is planned
-- No automatic re-check of currently-connected players' Discord membership
 
 ---
 

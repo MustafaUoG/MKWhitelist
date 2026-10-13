@@ -2,3 +2,7 @@ name: MKWhitelist
 version: 1.0
 main: dev.mkwhitelist.MKWhitelist
 api-version: "26.2"
+permissions:
+  mkwhitelist.admin:
+    description: Allows using /mkwhitelist (status, lookup, unlink, reload)
+    default: op
