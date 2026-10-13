@@ -1,5 +1,7 @@
 package dev.mkwhitelist;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,11 +20,8 @@ public class PreLoginListener implements Listener {
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         UUID playerUUID = event.getUniqueId();
 
-        //checks for discord will go here, for now we will only log what we are seeing
-
-
         if (!plugin.isDiscordConnected()){
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server setup incomplete. Please contact an admin.");
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Server setup incomplete. Please contact an admin."));
             return;
         }
 
@@ -30,12 +29,13 @@ public class PreLoginListener implements Listener {
 
         if (discordId == null){
             String code = plugin.generateLinkCode(playerUUID.toString());
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You need to link your Discord Account first!\n" + "Join our discord server and run /link " + code);
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("You need to link your Discord Account first!\n" + "Join our discord server and run ")
+                    .append(Component.text("/link " + code, NamedTextColor.GOLD)));
             return;
         }
 
         if (!plugin.isMemberofGuild(discordId)) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You must be a member of our Discord server to join!");
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("You must be a member of our Discord server to join!"));
             return;
         }
 
